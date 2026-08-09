@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>لوحة الإيجارات</title>
+  <script src="rentals-data.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+      <aside>
+        <div class="brand"><span class="mark">ر</span><span>Rentals</span></div>
+        <nav class="nav-section" aria-label="القائمة الرئيسية">
+          <div class="nav-label">عام</div>
+          <div class="nav-item active"><span class="nav-ico">▦</span> لوحة الإيجارات</div>
+          <div class="nav-item"><span class="nav-ico">↔</span> العقود</div>
+          <div class="nav-item"><span class="nav-ico">◉</span> المستأجرون</div>
+          <div class="nav-item"><span class="nav-ico">✉</span> المتابعات</div>
+        </nav>
+        <nav class="nav-section" aria-label="الأدوات">
+          <div class="nav-label">أدوات</div>
+          <div class="nav-item"><span class="nav-ico">▣</span> الوحدات</div>
+          <div class="nav-item"><span class="nav-ico">☷</span> الفواتير</div>
+          <div class="nav-item"><span class="nav-ico">⌁</span> التحليلات</div>
+          <div class="nav-item"><span class="nav-ico">✦</span> الأتمتة</div>
+        </nav>
+        <nav class="nav-section" aria-label="الدعم">
+          <div class="nav-label">دعم</div>
+          <div class="nav-item"><span class="nav-ico">⚙</span> الإعدادات</div>
+          <div class="nav-item"><span class="nav-ico">?</span> المساعدة</div>
+        </nav>
+        <div class="side-card">
+          <small>المصدر</small>
+          <strong>بيانات ثابتة</strong>
+          <small id="sideMeta">جاهزة للعرض</small>
+        </div>
+      </aside>
+
+      <main>
+        <div class="topbar">
+          <div class="search">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="بحث برقم العقار أو المستأجر أو الحي">
+          </div>
+          <div class="top-spacer"></div>
+          <button class="icon-btn" id="resetBtn" type="button" title="إعادة ضبط الفلاتر">↺</button>
+          <div class="profile">
+            <div class="avatar">ع</div>
+            <div>
+              <strong>لوحة الإيجارات</strong>
+              <small>GitHub Pages</small>
+            </div>
+          </div>
+        </div>
+
+        <section class="content">
+          <div class="heading">
+            <div>
+              <h1>لوحة الإيجارات</h1>
+              <div class="subtitle" id="dataMeta">جاري تجهيز البيانات...</div>
+            </div>
+            <button class="plain-btn" id="exportBtn" type="button"><span>↓</span><span>تصدير النتائج CSV</span></button>
+          </div>
+
+          <div class="notice" id="notice"></div>
+
+          <div class="filter-grid" aria-label="الفلاتر">
+            <div class="field">
+              <label for="districtFilter">الحي</label>
+              <select id="districtFilter"><option value="">كل الأحياء</option></select>
+            </div>
+            <div class="field">
+              <label for="typeFilter">نوع الوحدة</label>
+              <select id="typeFilter"><option value="">كل الأنواع</option></select>
+            </div>
+            <div class="field">
+              <label for="paymentFilter">حالة السداد</label>
+              <select id="paymentFilter"><option value="">كل الحالات</option></select>
+            </div>
+            <div class="field">
+              <label for="occupancyFilter">حالة الإشغال</label>
+              <select id="occupancyFilter"><option value="">الكل</option></select>
+            </div>
+            <div class="field">
+              <label for="rentFilter">الحد الأدنى للإيجار</label>
+              <input id="rentFilter" type="number" min="0" step="500" placeholder="0">
+            </div>
+            <button class="plain-btn" id="applyBtn" type="button">تطبيق</button>
+          </div>
+
+          <div class="cards">
+            <article class="card">
+              <div class="card-head"><span><span class="mini-ico">﷼</span> الدخل الشهري</span><span class="info-dot">ⓘ</span></div>
+              <div class="metric" id="revenueMetric">--</div>
+              <div class="metric-note"><span class="pill good" id="revenueShare">--</span><span>من إجمالي البيانات</span></div>
+            </article>
+            <article class="card">
+              <div class="card-head"><span><span class="mini-ico">▣</span> عدد العقارات</span><span class="info-dot">ⓘ</span></div>
+              <div class="metric" id="unitsMetric">--</div>
+              <div class="metric-note"><span class="pill brand" id="filteredShare">--</span><span>ضمن الفلتر الحالي</span></div>
+            </article>
+            <article class="card">
+              <div class="card-head"><span><span class="mini-ico">◌</span> معدل الإشغال</span><span class="info-dot">ⓘ</span></div>
+              <div class="metric" id="occupancyMetric">--</div>
+              <div class="metric-note"><span class="pill good" id="occupiedCount">--</span><span>وحدة مؤجرة</span></div>
+            </article>
+            <article class="card">
+              <div class="card-head"><span><span class="mini-ico">!</span> المتأخر والمتعثر</span><span class="info-dot">ⓘ</span></div>
+              <div class="metric" id="riskMetric">--</div>
+              <div class="metric-note"><span class="pill bad" id="riskShare">--</span><span>تحتاج متابعة</span></div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>نظرة الإيرادات حسب الحي</h2>
+                  <div class="panel-caption">أعلى 5 أحياء حسب دخل الوحدات المؤجرة</div>
+                </div>
+                <div class="large-value" id="avgRentMetric">--</div>
+              </div>
+              <div class="stack-chart" id="districtChart"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>توزيع أنواع الوحدات</h2>
+                  <div class="panel-caption">حسب عدد العقارات بعد الفلترة</div>
+                </div>
+                <span class="pill brand" id="topType">--</span>
+              </div>
+              <div class="bar-chart" id="typeChart"></div>
+            </section>
+          </div>
+
+          <div class="lower-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>توزيع السداد</h2>
+                  <div class="panel-caption">منتظم، متأخر، متعثر، وغير مؤجرة</div>
+                </div>
+              </div>
+              <div class="donut-wrap">
+                <div class="donut" id="paymentDonut"></div>
+                <div class="legend" id="paymentLegend"></div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>قائمة العقارات</h2>
+                  <div class="panel-caption" id="tableCaption">أحدث النتائج حسب الفلتر</div>
+                </div>
+                <span class="pill warn" id="rowLimit">أول 100 سجل</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>رقم العقار</th>
+                      <th>الحي</th>
+                      <th>نوع الوحدة</th>
+                      <th>المستأجر</th>
+                      <th>الإيجار الشهري</th>
+                      <th>آخر دفعة</th>
+                      <th>الحالة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rentalsTable"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+        </section>
+      </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
